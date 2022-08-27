@@ -1,0 +1,31 @@
+{
+	"name": "djsoft-radioboss",
+	"version": "1.0.0",
+	"api_version": "1.0.0",
+	"keywords": [
+		"Radio",
+		"DJ"
+	],
+	"manufacturer": "DJ Soft",
+	"product": "Radio BOSS",
+	"shortname": "radioboss",
+	"homepage": "https://github.com/bitfocus/companion-module-djsoft-radioboss#readme",
+	"description": "Remote control of DJ Soft's Radio BOSS software.",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "Joseph Adams <josephdadams@gmail.com>",
+	"license": "MIT",
+	"dependencies": {
+		"node-fetch": "2.6.0",
+		"xml2js": "^0.4.23"
+	},
+	"bugs": {
+		"url": "https://github.com/bitfocus/companion-module-djsoft-radioboss/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/bitfocus/companion-module-djsoft-radioboss.git"
+	}
+}
