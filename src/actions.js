@@ -1,7 +1,7 @@
 const RadioBOSS = require('./radioboss')
 
 module.exports = {
-	async sendCommand(cmd) {
+	async sendCommand(cmd, uriEncode) {
 		if (cmd !== undefined) {
 			try {
 				const connection = new RadioBOSS(this.config)
@@ -10,7 +10,7 @@ module.exports = {
 					this.log('debug', `Sending command: ${cmd}`);
 				}
 
-				const result = await connection.sendRequest(cmd)
+				const result = await connection.sendRequest(cmd, uriEncode)
 				this.debug('info', result)
 
 				if (result.status === 'success') {
@@ -439,7 +439,7 @@ module.exports = {
 			}
 		};
 
-		actionsArr.weather = {
+		/*actionsArr.weather = {
 			label: 'Set Weather City, Country',
 			options: [
 				{
@@ -459,13 +459,13 @@ module.exports = {
 				let cmd = 'cmd=weather ' + action.options.city + ' ' + action.options.country;
 				self.sendCommand(cmd);
 			}
-		};
+		};*/
 
 		actionsArr.micOn = {
 			label: 'Turn Mic On',
 			callback: function (action, bank) {
 				let cmd = 'action=mic&on=1';
-				self.sendCommand(cmd);
+				self.sendCommand(cmd, false);
 			}
 		};
 
@@ -473,7 +473,7 @@ module.exports = {
 			label: 'Turn Mic Off',
 			callback: function (action, bank) {
 				let cmd = 'action=mic&on=0';
-				self.sendCommand(cmd);
+				self.sendCommand(cmd, false);
 			}
 		};
 

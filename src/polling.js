@@ -96,6 +96,20 @@ async function getData(type, cmd) {
 										}
 		
 										if (result.Info.Options) {
+											if (result.Info.Options[0]['$']['scheduler']) {
+												self.STATUS.scheduler = Boolean(parseInt(result.Info.Options[0]['$']['scheduler']));
+											}
+											else {
+												self.STATUS.scheduler = false;
+											}
+
+											if (result.Info.Options[0]['$']['shuffle']) {
+												self.STATUS.shuffle = Boolean(parseInt(result.Info.Options[0]['$']['shuffle']));
+											}
+											else {
+												self.STATUS.shuffle = false;
+											}
+
 											if (result.Info.Options[0]['$']['repeat_track']) {
 												self.STATUS.repeatTrack = Boolean(parseInt(result.Info.Options[0]['$']['repeat_track']));
 											}
@@ -110,17 +124,47 @@ async function getData(type, cmd) {
 												self.STATUS.repeatList = false;
 											}
 
-											if (result.Info.Options[0]['$']['shuffle']) {
-												self.STATUS.shuffle = Boolean(parseInt(result.Info.Options[0]['$']['shuffle']));
+											if (result.Info.Options[0]['$']['break']) {
+												self.STATUS.break = Boolean(parseInt(result.Info.Options[0]['$']['break']));
 											}
 											else {
-												self.STATUS.shuffle = false;
+												self.STATUS.break = false;
+											}
+
+											if (result.Info.Options[0]['$']['autoamp']) {
+												self.STATUS.autoamp = Boolean(parseInt(result.Info.Options[0]['$']['autoamp']));
+											}
+											else {
+												self.STATUS.autoamp = false;
+											}
+
+											if (result.Info.Options[0]['$']['http_request']) {
+												self.STATUS.httpRequest = Boolean(parseInt(result.Info.Options[0]['$']['http_request']));
+											}
+											else {
+												self.STATUS.httpRequest = false;
+											}
+
+
+											if (result.Info.Options[0]['$']['manual']) {
+												self.STATUS.manual = Boolean(parseInt(result.Info.Options[0]['$']['manual']));
+											}
+											else {
+												self.STATUS.manual = false;
+											}
+
+
+											if (result.Info.Options[0]['$']['autointro']) {
+												self.STATUS.autoIntro = Boolean(parseInt(result.Info.Options[0]['$']['autointro']));
+											}
+											else {
+												self.STATUS.autoIntro = false;
 											}
 										}
 		
 										if (result.Info.Features) {
 											if (result.Info.Features[0]['$']['scheduler']) {
-												self.STATUS.scheduler = Boolean(parseInt(result.Info.Features[0]['$']['scheduler']));
+												self.STATUS.scheduler = Boolean(parseInt(result.Info.Features[0]['$']['break']));
 											}
 											else {
 												self.STATUS.scheduler = false;

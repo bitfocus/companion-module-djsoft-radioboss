@@ -34,7 +34,6 @@ This module will allow you to control DJ Soft Radio BOSS software.
 * Set Variable Value
 * Turn Silence Detector On/Off
 * Play Requested Song
-* Set Weather City, Country
 * Turn Mic On/Off
 
 ## Feedbacks

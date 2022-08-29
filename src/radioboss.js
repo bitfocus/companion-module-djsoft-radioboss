@@ -14,8 +14,13 @@ class RadioBOSS {
 		}
 	}
 
-	async sendRequest(cmd) {
-		let requestUrl = this.baseUrl + encodeURIComponent(cmd);
+	async sendRequest(cmd, uriEncode) {
+		if (uriEncode == undefined || uriEncode == true) {
+			cmd = encodeURIComponent(cmd);
+		}
+
+		let requestUrl = this.baseUrl + cmd;
+		
 		try {
 			const response = await fetch(requestUrl, this.requestOptions)
 			if (!response.ok) {
@@ -32,7 +37,6 @@ class RadioBOSS {
 				status: 'failed',
 			}
 		}
-
 	}
 }
 
