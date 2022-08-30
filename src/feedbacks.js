@@ -353,6 +353,46 @@ module.exports = {
             }
         }
 
+		feedbacks['encoder'] = {
+            type: 'boolean',
+            label: 'Show Encoder Status On Button',
+            description: 'Indicate if Encoder is in X Status',
+            style: {
+                color: foregroundColorWhite,
+                bgcolor: backgroundColorRed,
+            },
+            options: [
+				{
+                    type: 'dropdown',
+                    label: 'Encoder',
+                    id: 'encoder',
+                    choices: self.STATUS.encoders
+                },
+                {
+                    type: 'dropdown',
+                    label: 'Indicate in X Status',
+                    id: 'status',
+                    default: 'active',
+                    choices: [
+                        { id: 'active', label: 'Active' },
+                        { id: 'off', label: 'Off' }
+                    ]
+                }
+            ],
+            callback: function (feedback) {
+                let opt = feedback.options;
+				let encoder = self.STATUS.encoders.find((enc) => {enc.id === opt.encoder});
+
+				if (encoder) {
+					if (encoder.status.toString() == opt.status.toString()) {
+						return true;
+					}
+				}				
+
+                return false
+            }
+        }
+
         self.setFeedbackDefinitions(feedbacks);
     }
 }

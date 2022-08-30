@@ -439,7 +439,7 @@ module.exports = {
 			}
 		};
 
-		/*actionsArr.weather = {
+		actionsArr.weather = {
 			label: 'Set Weather City, Country',
 			options: [
 				{
@@ -456,10 +456,10 @@ module.exports = {
 				}
 			],			
 			callback: function (action, bank) {
-				let cmd = 'cmd=weather ' + action.options.city + ' ' + action.options.country;
+				let cmd = 'cmd=weather ' + action.options.city + ', ' + action.options.country;
 				self.sendCommand(cmd);
 			}
-		};*/
+		};
 
 		actionsArr.micOn = {
 			label: 'Turn Mic On',

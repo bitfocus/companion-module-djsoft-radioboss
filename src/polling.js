@@ -1,5 +1,6 @@
 const RadioBOSS = require('./radioboss')
 const {parseString} = require('xml2js');
+const { isArray } = require('lodash');
 
 async function getData(type, cmd) {
 	let self = this;
@@ -123,6 +124,15 @@ async function getData(type, cmd) {
 											else {
 												self.STATUS.repeatList = false;
 											}
+										}
+		
+										if (result.Info.Features) {
+											if (result.Info.Features[0]['$']['scheduler']) {
+												self.STATUS.scheduler = Boolean(parseInt(result.Info.Features[0]['$']['scheduler']));
+											}
+											else {
+												self.STATUS.scheduler = false;
+											}
 
 											if (result.Info.Options[0]['$']['break']) {
 												self.STATUS.break = Boolean(parseInt(result.Info.Options[0]['$']['break']));
@@ -162,15 +172,6 @@ async function getData(type, cmd) {
 											}
 										}
 		
-										if (result.Info.Features) {
-											if (result.Info.Features[0]['$']['scheduler']) {
-												self.STATUS.scheduler = Boolean(parseInt(result.Info.Features[0]['$']['break']));
-											}
-											else {
-												self.STATUS.scheduler = false;
-											}
-										}
-		
 										if (result.Info.Streaming) {
 											self.STATUS.streamingListeners			= result.Info.Streaming[0]['$']['listeners'];
 										}
@@ -196,10 +197,38 @@ async function getData(type, cmd) {
 		
 					if (type == 'encoderstatus') {
 						parseString(xmlContent, function (err, result) {
-							let resultString =  JSON.stringify(result);
-							if (self.lastEncoderContent !== resultString) { //keep it from showing up in the log a million times
-								self.log('debug', resultString);
-								self.lastEncoderContent = resultString;
+							try {
+								let encoderArray = result['Encoder'];
+								if (isArray(encoderArray)) {
+									self.STATUS.encoders = [];
+									for (let i = 0; i < encoderArray.length; i++) {
+										let encoder = encoderArray[i]['$'];
+										let encoderObj = {};
+										encoderObj.index = encoder['index'];
+										encoderObj.status = encoder['status'];
+										encoderObj.error = encoder['error'];
+										encoderObj.name = encoder['Name'];
+										encoderObj.listeners = encoder['listeners'];
+
+										//for UI dropdowns
+										encoderObj.id = encoderObj['index'];
+										encoderObj.label = encoderObj['name'];
+
+										self.STATUS.encoders.push(encoderObj);
+									}	
+									self.updateVariableDefinitions();
+								}
+								
+								/*let resultString =  JSON.stringify(result);
+	
+								if (self.lastEncoderContent !== resultString) { //keep it from showing up in the log a million times
+									self.log('debug', resultString);
+									self.lastEncoderContent = resultString;
+								}*/
+							}
+							catch(error) {
+								//error processing encoders
+								self.log('debug', 'Error processing encoders: ' + error);
 							}
 						});
 					}

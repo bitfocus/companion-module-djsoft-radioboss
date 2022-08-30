@@ -1,6 +1,8 @@
+const { isArrayLikeObject } = require("lodash");
+
 module.exports = {
 	updateVariableDefinitions() {
-		this.setVariableDefinitions([
+		let variables = [
 			{ label: 'Module State', 					name: 'module_state'},
 
 			{ label: 'Version', 					name: 'version'},
@@ -52,7 +54,19 @@ module.exports = {
 			{ label: 'Auto Intro', 					name: 'autointro'},
 
 			{ label: 'Streaming Listeners', 		name: 'streaming_listeners'},
-		])
+		]
+
+		if (isArray(self.STATUS.encoders)) {
+			for (let i = 0; i < self.STATUS.encoders.length; i++) {
+				variables.push( { label: `Encoder ${(i+1)} Index`, name: `encoder_${(i+1)}_index`});
+				variables.push( { label: `Encoder ${(i+1)} Name`, name: `encoder_${(i+1)}_name`});
+				variables.push( { label: `Encoder ${(i+1)} Status`, name: `encoder_${(i+1)}_status`});
+				variables.push( { label: `Encoder ${(i+1)} Error`, name: `encoder_${(i+1)}_error`});
+				variables.push( { label: `Encoder ${(i+1)} Listeners`, name: `encoder_${(i+1)}_listeners`});
+			}
+		}
+
+		this.setVariableDefinitions(variables);
 	},
 
 	checkVariables() {
@@ -106,6 +120,16 @@ module.exports = {
 			this.setVariable('autointro',					this.STATUS.autointro ? 'On' : 'Off');
 
 			this.setVariable('streaming_listeners',			this.STATUS.streamingListeners);
+
+			if (isArray(self.STATUS.encoders)) {
+				for (let i = 0; i < self.STATUS.encoders.length; i++) {
+					this.setVariable(`encoder_${(i+1)}_index`, this.STATUS.encoders[i].index);
+					this.setVariable(`encoder_${(i+1)}_name`, this.STATUS.encoders[i].name);
+					this.setVariable(`encoder_${(i+1)}_status`, this.STATUS.encoders[i].status);
+					this.setVariable(`encoder_${(i+1)}_error`, this.STATUS.encoders[i].error);
+					this.setVariable(`encoder_${(i+1)}_listeners`, this.STATUS.encoders[i].listeners);
+				}
+			}
 		}
 		catch(error) {
 			//do something with that error
