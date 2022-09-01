@@ -104,14 +104,6 @@ module.exports = {
 			}
 		};
 
-		actionsArr.prev = {
-			label: 'Return to Previous Track',
-			callback: function (action, bank) {
-				let cmd = 'cmd=prev';
-				self.sendCommand(cmd);
-			}
-		};
-
 		actionsArr.setVol = {
 			label: 'Set Volume',
 			options: [

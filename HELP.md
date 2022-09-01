@@ -15,7 +15,6 @@ This module will allow you to control DJ Soft Radio BOSS software.
 * Stop Playback
 * Pause Playback
 * Go to Next Track
-* Go to Previous Track
 * Set Volume
 * Clear Playlist
 * Reboot
