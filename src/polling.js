@@ -65,7 +65,7 @@ async function getData(type, cmd) {
 											self.STATUS.currentTrack.comment 		= result.Info.CurrentTrack[0]['TRACK'][0]['$']['COMMENT'];
 											self.STATUS.currentTrack.duration 		= result.Info.CurrentTrack[0]['TRACK'][0]['$']['DURATION'];
 											self.STATUS.currentTrack.playcount 		= result.Info.CurrentTrack[0]['TRACK'][0]['$']['PLAYCOUNT'];
-											self.STATUS.currentTrack.lastplaye 		= result.Info.CurrentTrack[0]['TRACK'][0]['$']['LASTPLAYED'];
+											self.STATUS.currentTrack.lastplayed 	= result.Info.CurrentTrack[0]['TRACK'][0]['$']['LASTPLAYED'];
 										}
 		
 										if (result.Info.PreviousTrack) {
@@ -77,7 +77,7 @@ async function getData(type, cmd) {
 											self.STATUS.previousTrack.comment 		= result.Info.PreviousTrack[0]['TRACK'][0]['$']['COMMENT'];
 											self.STATUS.previousTrack.duration 		= result.Info.PreviousTrack[0]['TRACK'][0]['$']['DURATION'];
 											self.STATUS.previousTrack.playcount 	= result.Info.PreviousTrack[0]['TRACK'][0]['$']['PLAYCOUNT'];
-											self.STATUS.previousTrack.lastplaye 	= result.Info.PreviousTrack[0]['TRACK'][0]['$']['LASTPLAYED'];
+											self.STATUS.previousTrack.lastplayed 	= result.Info.PreviousTrack[0]['TRACK'][0]['$']['LASTPLAYED'];
 										}
 		
 										if (result.Info.NextTrack) {
@@ -89,19 +89,26 @@ async function getData(type, cmd) {
 											self.STATUS.nextTrack.comment 			= result.Info.NextTrack[0]['TRACK'][0]['$']['COMMENT'];
 											self.STATUS.nextTrack.duration 			= result.Info.NextTrack[0]['TRACK'][0]['$']['DURATION'];
 											self.STATUS.nextTrack.playcount 		= result.Info.NextTrack[0]['TRACK'][0]['$']['PLAYCOUNT'];
-											self.STATUS.nextTrack.lastplaye 		= result.Info.NextTrack[0]['TRACK'][0]['$']['LASTPLAYED'];
+											self.STATUS.nextTrack.lastplayed 		= result.Info.NextTrack[0]['TRACK'][0]['$']['LASTPLAYED'];
+
+											if (self.STATUS.nexTrack.artist == '') {
+												self.STATUS.break = true;
+											}
+											else {
+												self.STATUS.break = false;
+											}
 										}
 		
 										if (result.Info.Playback) {
-											self.STATUS.playbackState				= result.Info.Playback[0]['$']['state'];
+											self.STATUS.playbackState = result.Info.Playback[0]['$']['state'];
 										}
 		
 										if (result.Info.Options) {
-											if (result.Info.Options[0]['$']['scheduler']) {
-												self.STATUS.scheduler = Boolean(parseInt(result.Info.Options[0]['$']['scheduler']));
+											if (result.Info.Options[0]['$']['repeat_list']) {
+												self.STATUS.repeatList = Boolean(parseInt(result.Info.Options[0]['$']['repeat_list']));
 											}
 											else {
-												self.STATUS.scheduler = false;
+												self.STATUS.repeatList = false;
 											}
 
 											if (result.Info.Options[0]['$']['shuffle']) {
@@ -111,19 +118,19 @@ async function getData(type, cmd) {
 												self.STATUS.shuffle = false;
 											}
 
-											if (result.Info.Options[0]['$']['repeat_track']) {
+											if (result.Info.Options[0]['$']['scheduler']) {
+												self.STATUS.scheduler = Boolean(parseInt(result.Info.Options[0]['$']['scheduler']));
+											}
+											else {
+												self.STATUS.scheduler = false;
+											}											
+
+											/*if (result.Info.Options[0]['$']['repeat_track']) {
 												self.STATUS.repeatTrack = Boolean(parseInt(result.Info.Options[0]['$']['repeat_track']));
 											}
 											else {
 												self.STATUS.repeatTrack = false;
-											}
-
-											if (result.Info.Options[0]['$']['repeat_list']) {
-												self.STATUS.repeatList = Boolean(parseInt(result.Info.Options[0]['$']['repeat_list']));
-											}
-											else {
-												self.STATUS.repeatList = false;
-											}
+											}*/								
 										}
 		
 										if (result.Info.Features) {
@@ -134,38 +141,29 @@ async function getData(type, cmd) {
 												self.STATUS.scheduler = false;
 											}
 
-											if (result.Info.Options[0]['$']['break']) {
-												self.STATUS.break = Boolean(parseInt(result.Info.Options[0]['$']['break']));
-											}
-											else {
-												self.STATUS.break = false;
-											}
-
-											if (result.Info.Options[0]['$']['autoamp']) {
-												self.STATUS.autoamp = Boolean(parseInt(result.Info.Options[0]['$']['autoamp']));
+											if (result.Info.Features[0]['$']['autoamp']) {
+												self.STATUS.autoamp = Boolean(parseInt(result.Info.Features[0]['$']['autoamp']));
 											}
 											else {
 												self.STATUS.autoamp = false;
 											}
 
-											if (result.Info.Options[0]['$']['http_request']) {
-												self.STATUS.httpRequest = Boolean(parseInt(result.Info.Options[0]['$']['http_request']));
+											if (result.Info.Features[0]['$']['http_request']) {
+												self.STATUS.httpRequest = Boolean(parseInt(result.Info.Features[0]['$']['http_request']));
 											}
 											else {
 												self.STATUS.httpRequest = false;
 											}
 
-
-											if (result.Info.Options[0]['$']['manual']) {
-												self.STATUS.manual = Boolean(parseInt(result.Info.Options[0]['$']['manual']));
+											if (result.Info.Features[0]['$']['manual']) {
+												self.STATUS.manual = Boolean(parseInt(result.Info.Features[0]['$']['manual']));
 											}
 											else {
 												self.STATUS.manual = false;
 											}
 
-
-											if (result.Info.Options[0]['$']['autointro']) {
-												self.STATUS.autoIntro = Boolean(parseInt(result.Info.Options[0]['$']['autointro']));
+											if (result.Info.Features[0]['$']['autointro']) {
+												self.STATUS.autoIntro = Boolean(parseInt(result.Info.Features[0]['$']['autointro']));
 											}
 											else {
 												self.STATUS.autoIntro = false;
@@ -173,7 +171,7 @@ async function getData(type, cmd) {
 										}
 		
 										if (result.Info.Streaming) {
-											self.STATUS.streamingListeners			= result.Info.Streaming[0]['$']['listeners'];
+											self.STATUS.streamingListeners = result.Info.Streaming[0]['$']['listeners'];
 										}
 									}
 								
