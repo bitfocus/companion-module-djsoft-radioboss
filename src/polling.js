@@ -91,7 +91,7 @@ async function getData(type, cmd) {
 											self.STATUS.nextTrack.playcount 		= result.Info.NextTrack[0]['TRACK'][0]['$']['PLAYCOUNT'];
 											self.STATUS.nextTrack.lastplayed 		= result.Info.NextTrack[0]['TRACK'][0]['$']['LASTPLAYED'];
 
-											if (self.STATUS.nexTrack.artist == '') {
+											if (self.STATUS.nextTrack.artist == '') {
 												self.STATUS.break = true;
 											}
 											else {
@@ -141,19 +141,19 @@ async function getData(type, cmd) {
 												self.STATUS.scheduler = false;
 											}
 
-											if (result.Info.Features[0]['$']['autoamp']) {
+											/*if (result.Info.Features[0]['$']['autoamp']) {
 												self.STATUS.autoamp = Boolean(parseInt(result.Info.Features[0]['$']['autoamp']));
 											}
 											else {
 												self.STATUS.autoamp = false;
-											}
+											}*/
 
-											if (result.Info.Features[0]['$']['http_request']) {
+											/*if (result.Info.Features[0]['$']['http_request']) {
 												self.STATUS.httpRequest = Boolean(parseInt(result.Info.Features[0]['$']['http_request']));
 											}
 											else {
 												self.STATUS.httpRequest = false;
-											}
+											}*/
 
 											if (result.Info.Features[0]['$']['manual']) {
 												self.STATUS.manual = Boolean(parseInt(result.Info.Features[0]['$']['manual']));
