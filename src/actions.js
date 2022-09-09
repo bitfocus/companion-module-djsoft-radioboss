@@ -403,7 +403,7 @@ module.exports = {
 			}
 		};
 
-		actionsArr.playRequestedSong = {
+		/*actionsArr.playRequestedSong = {
 			label: 'Play Requested Song',
 			options: [
 				{
@@ -429,7 +429,7 @@ module.exports = {
 
 				self.sendCommand(cmd);
 			}
-		};
+		};*/
 
 		actionsArr.weather = {
 			label: 'Set Weather City, Country',

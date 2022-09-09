@@ -66,7 +66,9 @@ class RadioBOSSInstance extends InstanceSkel {
 			manual: false,
 			autointro: false,
 			streamingListeners: '',
-			encoders: []
+			encoders: [
+				{ id: '-1', label: 'No Encoders Loaded.' }
+			]
 		};
 
 		// Assign the methods from the listed files to this class

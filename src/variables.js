@@ -56,8 +56,8 @@ module.exports = {
 			{ label: 'Streaming Listeners', 		name: 'streaming_listeners'},
 		]
 
-		if (isArray(self.STATUS.encoders)) {
-			for (let i = 0; i < self.STATUS.encoders.length; i++) {
+		if (isArray(this.STATUS.encoders)) {
+			for (let i = 0; i < this.STATUS.encoders.length; i++) {
 				variables.push( { label: `Encoder ${(i+1)} Index`, name: `encoder_${(i+1)}_index`});
 				variables.push( { label: `Encoder ${(i+1)} Name`, name: `encoder_${(i+1)}_name`});
 				variables.push( { label: `Encoder ${(i+1)} Status`, name: `encoder_${(i+1)}_status`});
@@ -114,15 +114,15 @@ module.exports = {
 			this.setVariable('repeat_track',				this.STATUS.repeatTrack ? 'On' : 'Off');
 			this.setVariable('repeat_list',					this.STATUS.repeatList ? 'On' : 'Off');
 			this.setVariable('break',						this.STATUS.break ? 'On' : 'Off');
-			//this.setVariable('autoamp',						this.STATUS.autoamp ? 'On' : 'Off');
+			//this.setVariable('autoamp',					this.STATUS.autoamp ? 'On' : 'Off');
 			//this.setVariable('http_request',				this.STATUS.httpRequest ? 'On' : 'Off');
 			this.setVariable('manual',						this.STATUS.manual ? 'On' : 'Off');
 			this.setVariable('autointro',					this.STATUS.autointro ? 'On' : 'Off');
 
 			this.setVariable('streaming_listeners',			this.STATUS.streamingListeners);
 
-			if (isArray(self.STATUS.encoders)) {
-				for (let i = 0; i < self.STATUS.encoders.length; i++) {
+			if (isArray(this.STATUS.encoders)) {
+				for (let i = 0; i < this.STATUS.encoders.length; i++) {
 					this.setVariable(`encoder_${(i+1)}_index`, this.STATUS.encoders[i].index);
 					this.setVariable(`encoder_${(i+1)}_name`, this.STATUS.encoders[i].name);
 					this.setVariable(`encoder_${(i+1)}_status`, this.STATUS.encoders[i].status);
