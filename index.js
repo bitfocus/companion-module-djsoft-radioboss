@@ -61,10 +61,10 @@ class RadioBOSSInstance extends InstanceSkel {
 			repeatTrack: false,
 			repeatList: false,
 			break: false,
-			autoamp: false,
-			httpRequest: false,
-			manual: false,
-			autointro: false,
+			//autoamp: false,
+			//httpRequest: false,
+			//manual: false,
+			//autointro: false,
 			streamingListeners: '',
 			encoders: [
 				{ id: '-1', label: 'No Encoders Loaded.' }

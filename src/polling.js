@@ -155,19 +155,19 @@ async function getData(type, cmd) {
 												self.STATUS.httpRequest = false;
 											}*/
 
-											if (result.Info.Features[0]['$']['manual']) {
+											/*if (result.Info.Features[0]['$']['manual']) {
 												self.STATUS.manual = Boolean(parseInt(result.Info.Features[0]['$']['manual']));
 											}
 											else {
 												self.STATUS.manual = false;
-											}
+											}*/
 
-											if (result.Info.Features[0]['$']['autointro']) {
+											/*if (result.Info.Features[0]['$']['autointro']) {
 												self.STATUS.autoIntro = Boolean(parseInt(result.Info.Features[0]['$']['autointro']));
 											}
 											else {
 												self.STATUS.autoIntro = false;
-											}
+											}*/
 										}
 		
 										if (result.Info.Streaming) {
@@ -198,6 +198,7 @@ async function getData(type, cmd) {
 							try {
 								let encoderArray = result['Encoder'];
 								if (isArray(encoderArray)) {
+									self.log('debug', 'Encoders is an array');
 									self.STATUS.encoders = [];
 									for (let i = 0; i < encoderArray.length; i++) {
 										let encoder = encoderArray[i]['$'];
@@ -216,13 +217,17 @@ async function getData(type, cmd) {
 									}	
 									self.updateVariableDefinitions();
 								}
+								else {
+									self.log('debug', 'Encoders is not an array');
+									self.log('debug', encoderArray);
+								}
 								
-								/*let resultString =  JSON.stringify(result);
+								let resultString =  JSON.stringify(result);
 	
 								if (self.lastEncoderContent !== resultString) { //keep it from showing up in the log a million times
 									self.log('debug', resultString);
 									self.lastEncoderContent = resultString;
-								}*/
+								}
 							}
 							catch(error) {
 								//error processing encoders

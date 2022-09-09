@@ -50,8 +50,8 @@ module.exports = {
 			{ label: 'Break', 						name: 'break'},
 			//{ label: 'Automatic Volume Control', 	name: 'autoamp'},
 			//{ label: 'HTTP Request', 				name: 'http_request'},
-			{ label: 'Scheduler Manual Mode', 		name: 'manual'},
-			{ label: 'Auto Intro', 					name: 'autointro'},
+			//{ label: 'Scheduler Manual Mode', 		name: 'manual'},
+			//{ label: 'Auto Intro', 					name: 'autointro'},
 
 			{ label: 'Streaming Listeners', 		name: 'streaming_listeners'},
 		]
@@ -116,8 +116,8 @@ module.exports = {
 			this.setVariable('break',						this.STATUS.break ? 'On' : 'Off');
 			//this.setVariable('autoamp',					this.STATUS.autoamp ? 'On' : 'Off');
 			//this.setVariable('http_request',				this.STATUS.httpRequest ? 'On' : 'Off');
-			this.setVariable('manual',						this.STATUS.manual ? 'On' : 'Off');
-			this.setVariable('autointro',					this.STATUS.autointro ? 'On' : 'Off');
+			//this.setVariable('manual',					this.STATUS.manual ? 'On' : 'Off');
+			//this.setVariable('autointro',					this.STATUS.autointro ? 'On' : 'Off');
 
 			this.setVariable('streaming_listeners',			this.STATUS.streamingListeners);
 

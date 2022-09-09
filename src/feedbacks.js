@@ -229,7 +229,7 @@ module.exports = {
             }
         }
 
-		feedbacks['autoamp'] = {
+		/*feedbacks['autoamp'] = {
             type: 'boolean',
             label: 'Show Automatic Volume Control State On Button',
             description: 'Indicate if Automatic Volume Control is in X State',
@@ -258,9 +258,9 @@ module.exports = {
 
                 return false
             }
-        }
+        }*/
 
-		feedbacks['http_request'] = {
+		/*feedbacks['http_request'] = {
             type: 'boolean',
             label: 'Show HTTP Request State On Button',
             description: 'Indicate if HTTP Request is in X State',
@@ -289,9 +289,9 @@ module.exports = {
 
                 return false
             }
-        }
+        }*/
 
-		feedbacks['manual'] = {
+		/*feedbacks['manual'] = {
             type: 'boolean',
             label: 'Show Scheduler Manual Mode State On Button',
             description: 'Indicate if Scheduler Manual Mode is in X State',
@@ -320,9 +320,9 @@ module.exports = {
 
                 return false
             }
-        }
+        }*/
 
-		feedbacks['autointro'] = {
+		/*feedbacks['autointro'] = {
             type: 'boolean',
             label: 'Show Auto Intro State On Button',
             description: 'Indicate if Auto Intro is in X State',
@@ -351,7 +351,7 @@ module.exports = {
 
                 return false
             }
-        }
+        }*/
 
 		feedbacks['encoder'] = {
             type: 'boolean',
