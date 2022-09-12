@@ -196,7 +196,7 @@ async function getData(type, cmd) {
 					if (type == 'encoderstatus') {
 						parseString(xmlContent, function (err, result) {
 							try {
-								let encoderArray = result['Encoder'];
+								let encoderArray = result['Encoders']['Encoder'];
 								if (isArray(encoderArray)) {
 									self.log('debug', 'Encoders is an array');
 									self.STATUS.encoders = [];
@@ -206,7 +206,7 @@ async function getData(type, cmd) {
 										encoderObj.index = encoder['index'];
 										encoderObj.status = encoder['status'];
 										encoderObj.error = encoder['error'];
-										encoderObj.name = encoder['Name'];
+										encoderObj.name = encoder['name'];
 										encoderObj.listeners = encoder['listeners'];
 
 										//for UI dropdowns
