@@ -198,7 +198,8 @@ async function getData(type, cmd) {
 							try {
 								let encoderArray = result['Encoders']['Encoder'];
 								if (isArray(encoderArray)) {
-									self.log('debug', 'Encoders is an array');
+									let strEncoders = JSON.stringify(self.STATUS.encoders); //store the existing value as a string for comparison later
+
 									self.STATUS.encoders = [];
 									for (let i = 0; i < encoderArray.length; i++) {
 										let encoder = encoderArray[i]['$'];
@@ -214,19 +215,15 @@ async function getData(type, cmd) {
 										encoderObj.label = encoderObj['name'];
 
 										self.STATUS.encoders.push(encoderObj);
-									}	
-									self.updateVariableDefinitions();
-								}
-								else {
-									self.log('debug', 'Encoders is not an array');
-									self.log('debug', encoderArray);
-								}
-								
-								let resultString =  JSON.stringify(result);
-	
-								if (self.lastEncoderContent !== resultString) { //keep it from showing up in the log a million times
-									self.log('debug', resultString);
-									self.lastEncoderContent = resultString;
+									}
+
+									if (strEncoders !== JSON.stringify(self.STATUS.encoders)) {
+										self.updateVariableDefinitions();
+										self.feedbacks();
+									}
+
+									self.checkVariables();
+									self.checkFeedbacks();
 								}
 							}
 							catch(error) {
