@@ -19,7 +19,7 @@
 	"license": "MIT",
 	"dependencies": {
 		"lodash": "^4.17.21",
-		"node-fetch": "2.6.0",
+		"node-fetch": "2.6.7",
 		"xml2js": "^0.5.0"
 	},
 	"bugs": {
