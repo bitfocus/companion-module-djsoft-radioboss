@@ -12,17 +12,23 @@ async function getData(type, cmd) {
 	//do something with xml
 	try {
 		if (result && result.response && result.response.body) {
+			self.errorCount = 0;
+			self.status(self.STATUS_OK);
+			self.setVariable('module_state', 'OK');
 			let readable = result.response.body;
 			const chunks = [];
 		
-			readable.on('readable', () => {
-				let chunk;
-				while (null !== (chunk = readable.read())) {
-					chunks.push(chunk);
-				}
-			});
-		
-			readable.on('end', () => {
+			await new Promise((resolve) => {
+				readable.on('readable', () => {
+					let chunk;
+					while (null !== (chunk = readable.read())) {
+						chunks.push(chunk);
+					}
+				});
+
+				readable.on('error', () => resolve());
+			
+				readable.on('end', () => {
 				const xmlContent = chunks.join('');
 				try {	
 					if (type == 'status') {
@@ -43,14 +49,14 @@ async function getData(type, cmd) {
 								self.checkFeedbacks();
 							}
 							catch(error) {
-								if (this.config.verbose) {
-									this.log('error', `Error Getting ${type} Data: ${error}`);
+								if (self.config.verbose) {
+									self.log('error', `Error Getting ${type} Data: ${error}`);
 								}
-								this.status(this.STATUS_ERROR);
+								self.status(self.STATUS_ERROR);
 							}
 						});
 					}
-		
+
 					if (type == 'playbackinfo') {
 						parseString(xmlContent, function (err, result) {
 							try {
@@ -179,20 +185,26 @@ async function getData(type, cmd) {
 								self.checkFeedbacks();
 							}
 							catch(error) {
-								if (this.config.verbose) {
-									this.log('error', `Error Getting ${type} Data: ${error}`);
+								if (self.config.verbose) {
+									self.log('error', `Error Getting ${type} Data: ${error}`);
 								}
-								this.status(this.STATUS_ERROR);
+								self.status(self.STATUS_ERROR);
 							}
 						});
 					}
-		
+
 					if (type == 'mic') {
 						self.STATUS.micStatus = Boolean(parseInt(xmlContent));
 						self.checkVariables();
 						self.checkFeedbacks();
 					}
 		
+					if (type == 'streamarchivestatus') {
+						self.STATUS.streamarchiveStatus = Boolean(parseInt(xmlContent));
+						self.checkVariables();
+						self.checkFeedbacks();
+					}
+
 					if (type == 'encoderstatus') {
 						parseString(xmlContent, function (err, result) {
 							try {
@@ -233,11 +245,6 @@ async function getData(type, cmd) {
 						});
 					}
 		
-					if (type == 'streamarchivestatus') {
-						self.STATUS.streamarchiveStatus = Boolean(parseInt(xmlContent));
-						self.checkVariables();
-						self.checkFeedbacks();
-					}
 				}
 				catch(error) {
 					if (this.config.verbose) {
@@ -245,39 +252,32 @@ async function getData(type, cmd) {
 					}
 					this.status(this.STATUS_ERROR);
 				}
+				resolve();
+			});
 			});
 		}
 		else {
-			if (!this.errorCount) {
-				if (this.config.verbose) {
-					this.log('error', `Error Getting ${type} Data: No response received from server. Is the Server Online?`);
-				}
-				this.status(this.STATUS_ERROR);
-				this.setVariable('module_state', 'Error - See Log');
+			self.errorCount++;
+			if (self.errorCount === 1 || self.errorCount % 15 === 0) {
+				const detail = result?.statusCode
+					? ` HTTP ${result.statusCode}.`
+					: result?.error
+					? ` ${result.error.code ?? result.error.message ?? result.error}`
+					: ''
+				self.log('error', `RadioBOSS unreachable (${type}).${detail} Check host/port and that the Remote Control API is enabled in RadioBOSS settings.`)
+				self.status(self.STATUS_ERROR);
+				self.setVariable('module_state', 'Error - See Log');
 			}
-			
-			// Cleanup polling
-			if (this.pollingInterval) {
-				this.log('debug', 'Stopping polling.');
-				clearInterval(this.pollingInterval);
-				this.pollingInterval = null;
-			}
-
-			this.errorCount++;
-		}	
+		}
 	}
 	catch(error) {
-		if (this.config.verbose) {
-			this.log('error', `Error Getting ${type} Data: ${error}`);
+		self.errorCount++;
+		if (self.errorCount === 1 || self.errorCount % 15 === 0) {
+			self.log('error', `Error getting ${type} data: ${error}`);
+			self.status(self.STATUS_ERROR);
+			self.setVariable('module_state', 'Error - See Log');
 		}
-		this.status(this.STATUS_ERROR);
-		this.setVariable('module_state', 'Error - See Log');
-		// Cleanup polling
-		if (this.pollingInterval) {
-			clearInterval(this.pollingInterval);
-			this.pollingInterval = null;
-		}
-	}	
+	}
 }
 
 module.exports = {
@@ -296,15 +296,26 @@ module.exports = {
 		if (this.config.polling && this.config.host) {
 			this.log('debug', `Polling started. Requesting new data from server every ${this.config.pollingrate}ms`);
 
+			// TODO: Investigate reported disconnects after a few polling cycles.
 			//const connection = new RadioBOSS(this.config)
+			let pollInProgress = false;
 			this.pollingInterval = setInterval(async () => {
-				this.status(this.STATUS_OK);
+				if (pollInProgress) {
+					return;
+				}
 
-				getData.bind(self)('status', 'action=status');
-				getData.bind(self)('playbackinfo', 'action=playbackinfo');
-				getData.bind(self)('mic', 'action=mic');
-				getData.bind(self)('encoderstatus', 'action=encoderstatus');
-				getData.bind(self)('streamarchivestatus', 'action=streamarchivestatus');
+				pollInProgress = true;
+
+				try {
+					await getData.bind(self)('status', 'action=status');
+					await getData.bind(self)('playbackinfo', 'action=playbackinfo');
+					await getData.bind(self)('mic', 'action=mic');
+					await getData.bind(self)('encoderstatus', 'action=encoderstatus');
+					await getData.bind(self)('streamarchivestatus', 'action=streamarchivestatus');
+				}
+				finally {
+					pollInProgress = false;
+				}
 			}, this.config.pollingrate)
 		}
 	},

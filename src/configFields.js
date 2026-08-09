@@ -2,14 +2,14 @@ module.exports = {
 	config_fields() {
 		return [
 			{
-				type: 'text',
+				type: 'static-text',
 				id: 'info',
 				width: 12,
 				label: 'Information',
 				value: 'This module controls DJ Soft\'s Radio BOSS software.  <a href="http://www.djsoft.net" target="_new">DJ Soft Website</a>'
 			},
 			{
-				type: 'text',
+				type: 'static-text',
 				id: 'info1',
 				label: 'Enable API',
 				width: 12,
@@ -36,8 +36,17 @@ module.exports = {
 				id: 'port',
 				width: 6,
 				label: 'Target Port',
-				default: '9000',
-				regex: this.REGEX_PORT
+				default: 9000,
+				min: 1,
+				max: 65535,
+			},
+			{
+				type: 'textinput',
+				id: 'apiPath',
+				width: 6,
+				label: 'API Path',
+				default: '/api/',
+				tooltip: 'RadioBOSS usually uses /api/. Older setups may use /.',
 			},
 			{
 				type: 'textinput',
@@ -47,14 +56,14 @@ module.exports = {
 				label: 'Password'
 			},
 			{
-				type: 'text',
+				type: 'static-text',
 				id: 'dummy1',
 				width: 12,
 				label: ' ',
 				value: ' ',
 			},
 			{
-				type: 'text',
+				type: 'static-text',
 				id: 'info2',
 				label: 'Polling',
 				width: 12,
@@ -83,15 +92,17 @@ module.exports = {
 				width: 9
 			},
 			{
-				type: 'textinput',
+				type: 'number',
 				id: 'pollingrate',
 				label: 'Polling Rate (in ms)',
 				default: 1000,
+				min: 250,
+				max: 60000,
 				width: 3,
 				isVisible: (configValues) => configValues.polling === true,
 			},
 			{
-				type: 'text',
+				type: 'static-text',
 				id: 'dummy2',
 				width: 12,
 				label: ' ',
@@ -102,7 +113,7 @@ module.exports = {
 				id: 'verbose',
 				label: 'Enable Verbose Logging',
 				default: false
-			}
+			},
 		]
 	},
 }

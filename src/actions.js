@@ -17,24 +17,22 @@ module.exports = {
 					this.status(this.STATUS_OK);
 				} else {
 					this.status(this.STATUS_ERROR);
-					this.log('error', result.status);
 					this.setVariable('module_state', 'Error - See Log');
+					const errMsg = result.error?.code ?? result.error?.message ?? String(result.error ?? result.statusCode ?? 'unknown')
+					if (errMsg.includes('ECONNREFUSED')) {
+						this.log('error', 'Unable to connect to RadioBOSS. Check that it is running and the Remote Control API is enabled.')
+					} else if (errMsg.includes('ETIMEDOUT') || errMsg.includes('ENOTFOUND')) {
+						this.log('error', 'Connection to RadioBOSS timed out. Check the host and port settings.')
+					} else if (result.statusCode) {
+						this.log('error', `RadioBOSS returned HTTP ${result.statusCode}.`)
+					} else {
+						this.log('error', `RadioBOSS command failed: ${errMsg}`)
+					}
 				}
 			} catch (error) {
 				this.status(this.STATUS_ERROR);
 				this.setVariable('module_state', 'Error - See Log');
-
-				let errorText = String(error);
-
-				if (errorText.match('ECONNREFUSED')) {
-					this.log('error', 'Unable to connect to the server.')
-				}
-				else if (errorText.match('ETIMEDOUT') || errorText.match('ENOTFOUND')) {
-					this.log('error', 'Connection to server has timed out.')
-				}
-				else {
-					this.log('error', `An error has occurred: ${errorText}`);
-				}
+				this.log('error', `An unexpected error has occurred: ${error}`);
 			}
 		}
 	},
@@ -196,7 +194,7 @@ module.exports = {
 					required: true,
 					range: false
 				}
-			],			
+			],
 			callback: function (action, bank) {
 				let cmd = 'cmd=connect ' + action.options.server;
 				self.sendCommand(cmd);
@@ -214,10 +212,37 @@ module.exports = {
 					required: true,
 					range: false
 				}
-			],			
+			],
 			callback: function (action, bank) {
 				let cmd = 'cmd=disconnect ' + action.options.server;
 				self.sendCommand(cmd);
+			}
+		};
+
+		actionsArr.streamArchiveOn = {
+			label: 'Turn Stream Archive Recording On',
+			callback: function (action, bank) {
+				self.STATUS.streamarchiveStatus = true
+				self.sendCommand('cmd=streamarchive on');
+				self.checkFeedbacks('recordIsOn')
+			}
+		};
+
+		actionsArr.streamArchiveOff = {
+			label: 'Turn Stream Archive Recording Off',
+			callback: function (action, bank) {
+				self.STATUS.streamarchiveStatus = false
+				self.sendCommand('cmd=streamarchive off');
+				self.checkFeedbacks('recordIsOn')
+			}
+		};
+
+		actionsArr.streamArchiveAutoToggle = {
+			label: 'Record Auto Toggle (ON if off, OFF if on)',
+			callback: function () {
+				self.STATUS.streamarchiveStatus = !self.STATUS.streamarchiveStatus
+				self.sendCommand(self.STATUS.streamarchiveStatus ? 'cmd=streamarchive on' : 'cmd=streamarchive off')
+				self.checkFeedbacks('recordIsOn')
 			}
 		};
 
@@ -466,6 +491,178 @@ module.exports = {
 			callback: function (action, bank) {
 				let cmd = 'action=mic&on=0';
 				self.sendCommand(cmd, false);
+			}
+		};
+
+		// ── State-aware auto toggle actions ──────────────────────────────────────
+		// Each action reads the current live STATUS and sends the correct on/off
+		// command at press time, so the button is always in sync even if RadioBOSS
+		// was controlled manually outside Companion.
+
+		actionsArr.micAutoToggle = {
+			label: 'Mic Auto Toggle (ON if off, OFF if on)',
+			callback: function () {
+				self.sendCommand(self.STATUS.micStatus ? 'action=mic&on=0' : 'action=mic&on=1', false)
+			}
+		};
+
+		actionsArr.schedulerAutoToggle = {
+			label: 'Scheduler Auto Toggle (ON if off, OFF if on)',
+			callback: function () {
+				self.sendCommand(self.STATUS.scheduler ? 'cmd=scheduler off' : 'cmd=scheduler on')
+			}
+		};
+
+		actionsArr.shuffleAutoToggle = {
+			label: 'Shuffle Auto Toggle (ON if off, OFF if on)',
+			callback: function () {
+				self.sendCommand(self.STATUS.shuffle ? 'cmd=set shuffle off' : 'cmd=set shuffle on')
+			}
+		};
+
+		actionsArr.repeatTrackAutoToggle = {
+			label: 'Repeat Track Auto Toggle (ON if off, OFF if on)',
+			callback: function () {
+				self.sendCommand(self.STATUS.repeatTrack ? 'cmd=set repeat_track off' : 'cmd=set repeat_track on')
+			}
+		};
+
+		actionsArr.repeatListAutoToggle = {
+			label: 'Repeat List Auto Toggle (ON if off, OFF if on)',
+			callback: function () {
+				self.sendCommand(self.STATUS.repeatList ? 'cmd=set repeat_list off' : 'cmd=set repeat_list on')
+			}
+		};
+
+		actionsArr.breakAutoToggle = {
+			label: 'Break Auto Toggle (ON if off, OFF if on)',
+			callback: function () {
+				self.sendCommand(self.STATUS.break ? 'cmd=set break off' : 'cmd=set break on')
+			}
+		};
+
+		actionsArr.encoderAutoToggle = {
+			label: 'Encoder Auto Toggle (connect if off, disconnect if active — state-aware)',
+			options: [
+				{
+					type: 'number',
+					label: 'Server Number',
+					id: 'server',
+					default: 1,
+					min: 1,
+					max: 16,
+				}
+			],
+			callback: function (action) {
+				const serverNum = parseInt(action.options.server ?? 1)
+				const encoder   = self.STATUS.encoders[serverNum - 1]
+				const statusStr = (encoder?.status ?? '').toString().toLowerCase()
+				const isActive  = statusStr === 'active' || statusStr === 'connected' || statusStr === '1'
+				self.sendCommand(isActive ? `cmd=disconnect ${serverNum}` : `cmd=connect ${serverNum}`)
+			}
+		};
+
+		// Smart Conn/Disc action — first press arms confirm mode (5 s window),
+		// second press within 5 s executes connect or disconnect based on live state.
+		// Timer expiry resets to normal without executing anything.
+		actionsArr.encoderConfirmToggle = {
+			label: 'Encoder Conn/Disc (Smart Confirm — 5 s window)',
+			options: [
+				{
+					type: 'number',
+					label: 'Server Number',
+					id: 'server',
+					default: 1,
+					min: 1,
+					max: 16,
+				}
+			],
+			callback: function (action) {
+				const serverNum = parseInt(action.options.server ?? 1)
+				const server    = String(serverNum)
+
+				if (!self._encoderConfirmState)  self._encoderConfirmState  = {}
+				if (!self._encoderConfirmTimers) self._encoderConfirmTimers = {}
+
+				if (self._encoderConfirmState[server]) {
+					// Second press — execute and cancel timer
+					clearTimeout(self._encoderConfirmTimers[server])
+					self._encoderConfirmState[server]  = false
+					self._encoderConfirmTimers[server] = undefined
+
+					// Encoders array is 0-based; server option is 1-based
+					const encoder    = self.STATUS.encoders[serverNum - 1]
+					const statusStr  = (encoder?.status ?? '').toString().toLowerCase()
+					const isActive   = statusStr === 'active' || statusStr === 'connected' || statusStr === '1'
+					self.log('debug', `[encoderConfirmToggle] server=${serverNum} status="${statusStr}" isActive=${isActive} → ${isActive ? 'disconnect' : 'connect'}`)
+					self.sendCommand(isActive ? `cmd=disconnect ${serverNum}` : `cmd=connect ${serverNum}`)
+					self.checkFeedbacks('encoderConfirmFlash')
+				} else {
+					// First press — enter confirm mode, start 5 s auto-reset timer
+					self._encoderConfirmState[server]  = true
+					self._encoderConfirmTimers[server] = setTimeout(() => {
+						self._encoderConfirmState[server]  = false
+						self._encoderConfirmTimers[server] = undefined
+						self.checkFeedbacks('encoderConfirmFlash')
+					}, 5000)
+					self.checkFeedbacks('encoderConfirmFlash')
+				}
+			}
+		};
+
+		// ── Schedule Events ──────────────────────────────────────────────────────
+
+		actionsArr.scheduleRunEvent = {
+			label: 'Run Schedule Event',
+			options: [
+				{
+					type: 'dropdown',
+					label: 'Event (from RadioBOSS schedule list)',
+					id: 'eventIdDropdown',
+					default: self.STATUS.scheduleEvents[0]?.id ?? '',
+					choices: self.STATUS.scheduleEvents.length > 0
+						? self.STATUS.scheduleEvents
+						: [{ id: '', label: '(No events loaded — press Refresh Events button first)' }],
+				},
+				{
+					type: 'checkbox',
+					label: 'Use manual Event ID instead',
+					id: 'useManualId',
+					default: false,
+				},
+				{
+					type: 'textinput',
+					label: 'Manual Event ID',
+					id: 'id',
+					default: '',
+					tooltip: 'Find IDs by opening in a browser: http://HOST:PORT/API_PATH?pass=PASSWORD&action=schedule&type=list',
+					isVisible: (options) => options.useManualId === true,
+				},
+				{
+					type: 'checkbox',
+					label: 'Skip next (run immediately without waiting for current track)',
+					id: 'skipnext',
+					default: false,
+				}
+			],
+			callback: function (action) {
+				const id = action.options.useManualId
+					? (action.options.id ?? '')
+					: (action.options.eventIdDropdown ?? '')
+				if (!id) {
+					self.log('warn', 'Run Schedule Event: no event selected or Event ID configured')
+					return
+				}
+				let cmd = `action=schedule&type=run&id=${id}`
+				if (action.options.skipnext) cmd += '&skipnext=1'
+				self.sendCommand(cmd)
+			}
+		};
+
+		actionsArr.scheduleRefreshEvents = {
+			label: 'Refresh Schedule Events List',
+			callback: function () {
+				self.fetchScheduleEvents()
 			}
 		};
 

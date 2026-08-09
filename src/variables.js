@@ -9,8 +9,6 @@ module.exports = {
 			{ label: 'Uptime', 						name: 'uptime'},
 
 			{ label: 'Mic Status', 					name: 'mic_status'},
-			{ label: 'Stream Archive Status', 		name: 'streamarchive_status'},
-
 			{ label: 'Playback State', 				name: 'playback_state'},
 
 			{ label: 'Current Track Artist', 		name: 'current_track_artist'},
@@ -53,6 +51,7 @@ module.exports = {
 			//{ label: 'Scheduler Manual Mode', 		name: 'manual'},
 			//{ label: 'Auto Intro', 					name: 'autointro'},
 
+			{ label: 'Stream Archive (Recording) Status', name: 'streamarchive_status'},
 			{ label: 'Streaming Listeners', 		name: 'streaming_listeners'},
 		]
 
@@ -75,8 +74,6 @@ module.exports = {
 			this.setVariable('uptime',						this.STATUS.uptime);
 
 			this.setVariable('mic_status',					this.STATUS.micStatus ? 'On' : 'Off');
-			this.setVariable('streamarchive_status',		this.STATUS.streamarchiveStatus ? 'On' : 'Off');
-
 			this.setVariable('playback_state',				this.STATUS.playbackState);
 
 			this.setVariable('current_track_artist',		this.STATUS.currentTrack.artist);
@@ -119,6 +116,7 @@ module.exports = {
 			//this.setVariable('manual',					this.STATUS.manual ? 'On' : 'Off');
 			//this.setVariable('autointro',					this.STATUS.autointro ? 'On' : 'Off');
 
+			this.setVariable('streamarchive_status',		this.STATUS.streamarchiveStatus ? 'On' : 'Off');
 			this.setVariable('streaming_listeners',			this.STATUS.streamingListeners);
 
 			if (isArray(this.STATUS.encoders)) {

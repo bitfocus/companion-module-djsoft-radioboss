@@ -1,32 +1,27 @@
 {
-	"name": "djsoft-radioboss",
-	"version": "1.0.9",
-	"api_version": "1.0.0",
-	"keywords": [
-		"Radio",
-		"DJ"
-	],
-	"manufacturer": "DJ Soft",
-	"product": "Radio BOSS",
-	"shortname": "radioboss",
-	"homepage": "https://github.com/bitfocus/companion-module-djsoft-radioboss#readme",
-	"description": "Remote control of DJ Soft's Radio BOSS software.",
-	"main": "index.js",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
-	},
-	"author": "Joseph Adams <josephdadams@gmail.com>",
-	"license": "MIT",
-	"dependencies": {
-		"lodash": "^4.18.1",
-		"node-fetch": "2.6.7",
-		"xml2js": "^0.5.0"
-	},
-	"bugs": {
-		"url": "https://github.com/bitfocus/companion-module-djsoft-radioboss/issues"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/bitfocus/companion-module-djsoft-radioboss.git"
-	}
+  "name": "djsoft-radioboss",
+  "version": "2.0.0",
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "main.js",
+  "author": "Marckenson John <mjohntec@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/7tech7/companion-module-djsoft-radioboss.git"
+  },
+  "bugs": {
+    "url": "https://github.com/7tech7/companion-module-djsoft-radioboss/issues"
+  },
+  "scripts": {
+    "build": "companion-module-build"
+  },
+  "dependencies": {
+    "@companion-module/base": "1.7.1",
+    "lodash": "^4.17.21",
+    "node-fetch": "2.6.7",
+    "xml2js": "^0.5.0"
+  },
+  "devDependencies": {
+    "@companion-module/tools": "2.0.4"
+  }
 }
