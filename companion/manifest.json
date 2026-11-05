@@ -19,7 +19,7 @@
   ],
   "legacyIds": ["radioboss"],
   "runtime": {
-    "type": "node18",
+    "type": "node26",
     "api": "nodejs-ipc",
     "apiVersion": "1.7.1",
     "entrypoint": "../main.js"
